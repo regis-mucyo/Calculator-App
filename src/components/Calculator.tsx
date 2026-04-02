@@ -1,86 +1,163 @@
 import { useState } from "react";
 
 const Calculator = () => {
-  const [rightSide, setRightSide] = useState<string | number>("");
-  const [track, setTrack] = useState("");
-  const [leftSide, setLeftSide] = useState<string | number>("");
-  const [final, setFinal] = useState<string | number>("");
-  const [answer, setAnswer] = useState(false);
-  const [secondInput, setSecondInput] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [num, setNum] = useState<string>("");
+  const [control, setControl] = useState(true);
+  const handleClicks = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const currentNum = e.currentTarget.textContent;
 
-  const handleRight = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const text = e.currentTarget.textContent;
-
-    setTrack((prev) => `${prev}${text}`);
-    if (track.includes("+")) {
-      setLeftSide((prev) => `${prev}${text === "+" ? "" : text}`);
+    if (currentNum === "AC") {
+      setControl(true);
+      setNum("");
+      setCurrent(0);
     } else {
-      setRightSide((prev) => `${prev}${text === "+" ? "" : text}`);
+      setControl(false);
     }
+    setNum((prev) => prev.concat(currentNum));
   };
-
-  const handleSum = () => {
-    const first = Number(rightSide);
-    const secon = Number(leftSide);
-    setFinal(first + secon);
-  };
-
-  const checkFinal = () => {
-    if (final !== "") {
-      setAnswer(true);
-    }
-  };
-
-  const second = () => {
-    if (leftSide !== "") setSecondInput(true);
-  };
+  console.log(control);
+  console.log(num.split("").filter((e) => Number(e)));
   return (
     <>
-      <section>
-        <p>This is the final answer : {answer ? final : rightSide} </p>
-        <p>{`Right Side Numbers (${rightSide})`}</p>
-        <p>{`Left Side Numbers (${leftSide})`}</p>
-        <p>Tracking : {track}</p>
-        <p>Final Answer : {final}</p>
-        <section>
+      <section className="my-11">
+        <main className="bg-gray-500 h-14 ">
+          {
+            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
+              {control ? current : num.split("").filter((e) => Number(e))}
+            </p>
+          }
+        </main>
+        <section className="bg-gray-100 grid grid-cols-4 ">
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
-              second();
+              handleClicks(e);
             }}
+            className="border border-gray-400 p-7 text-3xl font-medium"
+          >
+            AC
+          </button>
+          <button className=" border border-gray-400 text-3xl font-medium">
+            +/-
+          </button>
+          <button className=" border border-gray-400 text-3xl font-medium">
+            %
+          </button>
+          <button
+            onClick={() => {}}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500 text-white"
+          >
+            &divide;
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
+          >
+            7
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            8
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            9
+          </button>
+          <button
+            onClick={() => {}}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
+          >
+            x
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
+          >
+            4
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            5
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            6
+          </button>
+          <button
+            onClick={() => {}}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
+          >
+            -
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
           >
             1
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
-              second();
+              handleClicks(e);
             }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
           >
             2
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
+              handleClicks(e);
             }}
+            className=" border border-gray-400 text-3xl font-medium"
           >
             3
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
-              handleSum();
-              checkFinal();
+              handleClicks(e);
             }}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
             +
-          </button>{" "}
-          <br />
+          </button>
           <button
-            onClick={() => {
-              handleSum();
-              second();
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
             }}
+            className=" border border-gray-400 col-span-2 p-7 text-3xl font-medium"
+          >
+            0
+          </button>
+          <button
+            onClick={() => {}}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            .
+          </button>
+          <button
+            onClick={() => {}}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
             =
           </button>
@@ -89,4 +166,5 @@ const Calculator = () => {
     </>
   );
 };
+
 export default Calculator;

@@ -1,15 +1,14 @@
 import { useState } from "react";
 
 const Calculator = () => {
+  const [count, setCount] = useState(0);
   const [current, setCurrent] = useState(0);
   const [num, setNum] = useState<string>("");
   const [control, setControl] = useState(true);
   const [firstNum, setFirstNum] = useState<string[]>([]);
   const [secondNum, setSecondNum] = useState("");
-  const [calculation, setCalculation] = useState("");
   const [trackNum, setTrackNum] = useState(false);
   const handleClicks = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const signs = ["+", "-", "x", "/"];
     const currentValue = e.currentTarget.textContent;
 
     if (currentValue === "AC") {
@@ -18,15 +17,34 @@ const Calculator = () => {
       setCurrent(0);
       setFirstNum([]);
       setSecondNum("");
+      setCount(0);
     } else if (
       currentValue === "+" ||
       currentValue === "-" ||
       currentValue === "/" ||
-      currentValue === "x"
+      (currentValue === "x" && count === 0)
     ) {
-      // setCalculation(currentValue);
+      setCount((prev) => prev + 1);
       setTrackNum(true);
       setFirstNum(num.split("").filter((e) => Number(e)));
+      if (count >= 1) {
+        setNum("");
+        switch (currentValue) {
+          case "+":
+            setFirstNum([`${Number(firstNum.join("")) + Number(secondNum)}`]);
+            break;
+          case "-":
+            setFirstNum([`${Number(firstNum.join("")) - Number(secondNum)}`]);
+            break;
+          case "/":
+            setFirstNum([`${Number(firstNum.join("")) / Number(secondNum)}`]);
+            break;
+          case "x":
+            setFirstNum([`${Number(firstNum.join("")) * Number(secondNum)}`]);
+            break;
+        }
+        setSecondNum("");
+      }
     } else if (trackNum) {
       setSecondNum((prev) => prev.concat(currentValue));
     } else {
@@ -35,7 +53,9 @@ const Calculator = () => {
     setNum((prev) => prev.concat(currentValue));
   };
 
-  // console.log(firstNum);
+  console.log(firstNum);
+  console.log(secondNum.split("").filter((e) => Number(e)));
+  console.log(count);
   // console.log(secondNum.split("").filter((e) => Number(e)));
   // console.log(secondNum.length === 0 ? true : false);
   // // console.log(control);
@@ -53,7 +73,9 @@ const Calculator = () => {
             {secondNum.length === 0
               ? control
                 ? current
-                : num.split("").filter((e) => Number(e))
+                : count >= 2
+                  ? firstNum
+                  : num.split("").filter((e) => Number(e))
               : secondNum.split("").filter((e) => Number(e))}
           </p>
         </main>

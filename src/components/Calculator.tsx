@@ -8,6 +8,8 @@ const Calculator = () => {
   const [firstNum, setFirstNum] = useState<string[]>([]);
   const [secondNum, setSecondNum] = useState("");
   const [trackNum, setTrackNum] = useState(false);
+  const [trackEqual, setTrackEqual] = useState(false);
+  const [trackSigns, setTrackSigns] = useState("");
   const handleClicks = (e: React.MouseEvent<HTMLButtonElement>) => {
     const currentValue = e.currentTarget.textContent;
 
@@ -18,12 +20,15 @@ const Calculator = () => {
       setFirstNum([]);
       setSecondNum("");
       setCount(0);
+      setTrackEqual(false);
+      setTrackSigns("");
     } else if (
       currentValue === "+" ||
       currentValue === "-" ||
       currentValue === "/" ||
       (currentValue === "x" && count === 0)
     ) {
+      setTrackSigns(currentValue);
       setCount((prev) => prev + 1);
       setTrackNum(true);
       setFirstNum(num.split("").filter((e) => Number(e)));
@@ -52,32 +57,39 @@ const Calculator = () => {
     }
     setNum((prev) => prev.concat(currentValue));
   };
-
-  console.log(firstNum);
-  console.log(secondNum.split("").filter((e) => Number(e)));
-  console.log(count);
-  // console.log(secondNum.split("").filter((e) => Number(e)));
-  // console.log(secondNum.length === 0 ? true : false);
-  // // console.log(control);
-  // // console.log(num.split("").filter((e) => Number(e)));
-  // console.log(calculation);
-  // console.log(num.split("").filter((e) => Number(e)));
-  // console.log(trackNum);
-  // console.log(control);
-
+  const handleEqual = () => {
+    setTrackEqual(true);
+    if (trackSigns.includes("+")) {
+      setFirstNum([`${Number(firstNum.join("")) + Number(secondNum)}`]);
+    } else if (trackSigns.includes("-")) {
+      setFirstNum([`${Number(firstNum.join("")) - Number(secondNum)}`]);
+    } else if (trackSigns.includes("x")) {
+      setFirstNum([`${Number(firstNum.join("")) * Number(secondNum)}`]);
+    } else if (trackSigns.includes("/")) {
+      setFirstNum([`${Number(firstNum.join("")) / Number(secondNum)}`]);
+    }
+    setSecondNum("");
+  };
   return (
     <>
       <section className="my-11">
         <main className="bg-gray-500 h-14 ">
-          <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
-            {secondNum.length === 0
-              ? control
-                ? current
-                : count >= 2
-                  ? firstNum
-                  : num.split("").filter((e) => Number(e))
-              : secondNum.split("").filter((e) => Number(e))}
-          </p>
+          {trackEqual ? (
+            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
+              {" "}
+              {firstNum}{" "}
+            </p>
+          ) : (
+            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
+              {secondNum.length === 0
+                ? control
+                  ? current
+                  : count >= 2
+                    ? firstNum
+                    : num.split("").filter((e) => Number(e))
+                : secondNum.split("").filter((e) => Number(e))}
+            </p>
+          )}
         </main>
         <section className="bg-gray-100 grid grid-cols-4 ">
           <button
@@ -213,7 +225,7 @@ const Calculator = () => {
             .
           </button>
           <button
-            onClick={() => {}}
+            onClick={handleEqual}
             className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
             =

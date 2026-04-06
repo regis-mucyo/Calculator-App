@@ -1,114 +1,204 @@
 import { useState } from "react";
-
 const Calculator = () => {
-  const [count, setCount] = useState(0);
-  const [current, setCurrent] = useState(0);
-  const [num, setNum] = useState<string>("");
-  const [control, setControl] = useState(true);
-  const [firstNum, setFirstNum] = useState<string[]>([]);
-  const [secondNum, setSecondNum] = useState("");
-  const [trackNum, setTrackNum] = useState(false);
-  const [trackEqual, setTrackEqual] = useState(false);
-  const [trackSigns, setTrackSigns] = useState("");
-  const handleClicks = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const currentValue = e.currentTarget.textContent;
+  const [defaultNum, setDefaultNum] = useState<string[]>(["0"]);
+  const [numbers, setNumbers] = useState<string[]>([]);
+  const [firstInput, setFirstInput] = useState<string[]>([]);
+  const [trackInput, setTrackInput] = useState(false);
+  const [calSign, setCalSign] = useState("");
+  const [secondInput, setSecondInput] = useState<string[]>([]);
 
-    if (currentValue === "AC") {
-      setControl(true);
-      setNum("");
-      setCurrent(0);
-      setFirstNum([]);
-      setSecondNum("");
-      setCount(0);
-      setTrackEqual(false);
-      setTrackSigns("");
-    } else if (
-      currentValue === "+" ||
-      currentValue === "-" ||
-      currentValue === "/" ||
-      (currentValue === "x" && count === 0)
-    ) {
-      setTrackSigns(currentValue);
-      setCount((prev) => prev + 1);
-      setTrackNum(true);
-      setFirstNum(num.split("").filter((e) => Number(e)));
-      if (count >= 1) {
-        setNum("");
-        switch (currentValue) {
-          case "+":
-            setFirstNum([`${Number(firstNum.join("")) + Number(secondNum)}`]);
-            break;
-          case "-":
-            setFirstNum([`${Number(firstNum.join("")) - Number(secondNum)}`]);
-            break;
-          case "/":
-            setFirstNum([`${Number(firstNum.join("")) / Number(secondNum)}`]);
-            break;
-          case "x":
-            setFirstNum([`${Number(firstNum.join("")) * Number(secondNum)}`]);
-            break;
-        }
-        setSecondNum("");
-      }
-    } else if (trackNum) {
-      setSecondNum((prev) => prev.concat(currentValue));
+  const handleNum = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const currentNum = e.currentTarget.textContent;
+    setNumbers((prev) =>
+      numbers.length >= 12 ? numbers : [...prev, currentNum],
+    );
+    if (trackInput) {
+      setSecondInput((prev) => [...prev, currentNum]);
     } else {
-      setControl(false);
+      setFirstInput((prev) => [...prev, currentNum]);
     }
-    setNum((prev) => prev.concat(currentValue));
   };
-  const handleEqual = () => {
-    setTrackEqual(true);
-    if (trackSigns.includes("+")) {
-      setFirstNum([`${Number(firstNum.join("")) + Number(secondNum)}`]);
-    } else if (trackSigns.includes("-")) {
-      setFirstNum([`${Number(firstNum.join("")) - Number(secondNum)}`]);
-    } else if (trackSigns.includes("x")) {
-      setFirstNum([`${Number(firstNum.join("")) * Number(secondNum)}`]);
-    } else if (trackSigns.includes("/")) {
-      setFirstNum([`${Number(firstNum.join("")) / Number(secondNum)}`]);
+  const handleSign = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const currentSign = e.currentTarget.textContent;
+
+    if (!trackInput) {
+      setFirstInput(numbers.join("").split(" "));
+      setTrackInput(true);
+      setNumbers([]);
+      setCalSign(currentSign);
     }
-    setSecondNum("");
+
+    if (secondInput.length !== 0) {
+      switch (calSign) {
+        case "+":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) + Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+
+          setSecondInput([]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) + Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+        case "-":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) - Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setSecondInput([]);
+          setTrackInput(false);
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) - Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setCalSign("");
+          break;
+        case "/":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) / Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setSecondInput([]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) / Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+        case "x":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) * Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setSecondInput([]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) * Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+      }
+    }
+  };
+
+  const handleSecondSign = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const currentSign = e.currentTarget.textContent;
+    if (currentSign === "=") {
+      switch (calSign) {
+        case "+":
+          setSecondInput([]);
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) + Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) + Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+        case "-":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) - Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setSecondInput([]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) - Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+        case "/":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) / Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setSecondInput([]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) / Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+        case "x":
+          setFirstInput([
+            `${Number(firstInput.slice(0, 12).join("")) * Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          setSecondInput([]);
+          setTrackInput(false);
+          setCalSign("");
+          setNumbers([
+            `${Number(firstInput.slice(0, 12).join("")) * Number(secondInput.slice(0, 12).join(""))}`,
+          ]);
+          break;
+      }
+    }
+    if (currentSign === "AC") {
+      setNumbers([]);
+      setFirstInput([]);
+      setTrackInput(false);
+      setSecondInput([]);
+      setDefaultNum(["0"]);
+    }
+    if (currentSign === "+/-") {
+      const negative = `${-Math.abs(Number(numbers.join("").split(" ")))}`;
+      setNumbers([negative]);
+    }
+    if (currentSign === "%") {
+      const perc = `${Number(numbers.join("").split(" ")) / 100}`;
+      setNumbers([perc]);
+    }
   };
   return (
     <>
-      <section className="my-11">
+      <section className="my-2 mx-5 md:mx-60 lg:mx-120">
         <main className="bg-gray-500 h-14 ">
-          {trackEqual ? (
-            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
-              {" "}
-              {firstNum}{" "}
+          {numbers.join("").includes("-") ? (
+            <p className="text-right text-white text-4xl relative top-2 right-3 overflow-hidden">
+              {numbers.length >= 12 ? numbers : numbers}
             </p>
           ) : (
-            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
-              {secondNum.length === 0
-                ? control
-                  ? current
-                  : count >= 2
-                    ? firstNum
-                    : num.split("").filter((e) => Number(e))
-                : secondNum.split("").filter((e) => Number(e))}
+            <p className="text-right text-white text-4xl relative top-2 right-3 overflow-hidden">
+              {firstInput.length === 0
+                ? defaultNum
+                : trackInput
+                  ? secondInput.length !== 0
+                    ? secondInput.length >= 12
+                      ? numbers
+                      : secondInput
+                    : firstInput.length >= 12
+                      ? numbers
+                      : firstInput
+                  : numbers.length >= 12
+                    ? numbers
+                    : numbers}
             </p>
           )}
         </main>
         <section className="bg-gray-100 grid grid-cols-4 ">
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleSecondSign(e);
             }}
             className="border border-gray-400 p-7 text-3xl font-medium"
           >
             AC
           </button>
-          <button className=" border border-gray-400 text-3xl font-medium">
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleSecondSign(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
             +/-
           </button>
-          <button className=" border border-gray-400 text-3xl font-medium">
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleSecondSign(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
             %
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleSign(e);
             }}
             className=" border border-gray-400 text-3xl font-medium bg-orange-500 text-white"
           >
@@ -116,7 +206,8 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
+              // test(e);
             }}
             className=" border border-gray-400 p-7 text-3xl font-medium"
           >
@@ -124,7 +215,8 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
+              // test(e);
             }}
             className=" border border-gray-400 text-3xl font-medium"
           >
@@ -132,7 +224,8 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
+              // test(e);
             }}
             className=" border border-gray-400 text-3xl font-medium"
           >
@@ -140,7 +233,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleSign(e);
             }}
             className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
@@ -148,7 +241,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 p-7 text-3xl font-medium"
           >
@@ -156,7 +249,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 text-3xl font-medium"
           >
@@ -164,7 +257,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 text-3xl font-medium"
           >
@@ -172,7 +265,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleSign(e);
             }}
             className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
@@ -180,7 +273,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 p-7 text-3xl font-medium"
           >
@@ -188,7 +281,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 p-7 text-3xl font-medium"
           >
@@ -196,7 +289,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 text-3xl font-medium"
           >
@@ -204,7 +297,7 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleSign(e);
             }}
             className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
@@ -212,20 +305,24 @@ const Calculator = () => {
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleClicks(e);
+              handleNum(e);
             }}
             className=" border border-gray-400 col-span-2 p-7 text-3xl font-medium"
           >
             0
           </button>
           <button
-            onClick={() => {}}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleNum(e);
+            }}
             className=" border border-gray-400 text-3xl font-medium"
           >
             .
           </button>
           <button
-            onClick={handleEqual}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleSecondSign(e);
+            }}
             className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
             =

@@ -1,86 +1,232 @@
 import { useState } from "react";
 
 const Calculator = () => {
-  const [rightSide, setRightSide] = useState<string | number>("");
-  const [track, setTrack] = useState("");
-  const [leftSide, setLeftSide] = useState<string | number>("");
-  const [final, setFinal] = useState<string | number>("");
-  const [answer, setAnswer] = useState(false);
-  const [secondInput, setSecondInput] = useState(false);
+  const [count, setCount] = useState(0);
+  const [current, setCurrent] = useState(0);
+  const [num, setNum] = useState<string>("");
+  const [control, setControl] = useState(true);
+  const [firstNum, setFirstNum] = useState<string[]>([]);
+  const [secondNum, setSecondNum] = useState("");
+  const [trackNum, setTrackNum] = useState(false);
+  const [trackEqual, setTrackEqual] = useState(false);
+  const [trackSigns, setTrackSigns] = useState("");
+  const handleClicks = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const currentValue = e.currentTarget.textContent;
 
-  const handleRight = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const text = e.currentTarget.textContent;
-
-    setTrack((prev) => `${prev}${text}`);
-    if (track.includes("+")) {
-      setLeftSide((prev) => `${prev}${text === "+" ? "" : text}`);
+    if (currentValue === "AC") {
+      setControl(true);
+      setNum("");
+      setCurrent(0);
+      setFirstNum([]);
+      setSecondNum("");
+      setCount(0);
+      setTrackEqual(false);
+      setTrackSigns("");
+    } else if (
+      currentValue === "+" ||
+      currentValue === "-" ||
+      currentValue === "/" ||
+      (currentValue === "x" && count === 0)
+    ) {
+      setTrackSigns(currentValue);
+      setCount((prev) => prev + 1);
+      setTrackNum(true);
+      setFirstNum(num.split("").filter((e) => Number(e)));
+      if (count >= 1) {
+        setNum("");
+        switch (currentValue) {
+          case "+":
+            setFirstNum([`${Number(firstNum.join("")) + Number(secondNum)}`]);
+            break;
+          case "-":
+            setFirstNum([`${Number(firstNum.join("")) - Number(secondNum)}`]);
+            break;
+          case "/":
+            setFirstNum([`${Number(firstNum.join("")) / Number(secondNum)}`]);
+            break;
+          case "x":
+            setFirstNum([`${Number(firstNum.join("")) * Number(secondNum)}`]);
+            break;
+        }
+        setSecondNum("");
+      }
+    } else if (trackNum) {
+      setSecondNum((prev) => prev.concat(currentValue));
     } else {
-      setRightSide((prev) => `${prev}${text === "+" ? "" : text}`);
+      setControl(false);
     }
+    setNum((prev) => prev.concat(currentValue));
   };
-
-  const handleSum = () => {
-    const first = Number(rightSide);
-    const secon = Number(leftSide);
-    setFinal(first + secon);
-  };
-
-  const checkFinal = () => {
-    if (final !== "") {
-      setAnswer(true);
+  const handleEqual = () => {
+    setTrackEqual(true);
+    if (trackSigns.includes("+")) {
+      setFirstNum([`${Number(firstNum.join("")) + Number(secondNum)}`]);
+    } else if (trackSigns.includes("-")) {
+      setFirstNum([`${Number(firstNum.join("")) - Number(secondNum)}`]);
+    } else if (trackSigns.includes("x")) {
+      setFirstNum([`${Number(firstNum.join("")) * Number(secondNum)}`]);
+    } else if (trackSigns.includes("/")) {
+      setFirstNum([`${Number(firstNum.join("")) / Number(secondNum)}`]);
     }
-  };
-
-  const second = () => {
-    if (leftSide !== "") setSecondInput(true);
+    setSecondNum("");
   };
   return (
     <>
-      <section>
-        <p>This is the final answer : {answer ? final : rightSide} </p>
-        <p>{`Right Side Numbers (${rightSide})`}</p>
-        <p>{`Left Side Numbers (${leftSide})`}</p>
-        <p>Tracking : {track}</p>
-        <p>Final Answer : {final}</p>
-        <section>
+      <section className="my-11">
+        <main className="bg-gray-500 h-14 ">
+          {trackEqual ? (
+            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
+              {" "}
+              {firstNum}{" "}
+            </p>
+          ) : (
+            <p className="text-right text-white text-4xl relative top-1.5 right-2.5">
+              {secondNum.length === 0
+                ? control
+                  ? current
+                  : count >= 2
+                    ? firstNum
+                    : num.split("").filter((e) => Number(e))
+                : secondNum.split("").filter((e) => Number(e))}
+            </p>
+          )}
+        </main>
+        <section className="bg-gray-100 grid grid-cols-4 ">
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
-              second();
+              handleClicks(e);
             }}
+            className="border border-gray-400 p-7 text-3xl font-medium"
+          >
+            AC
+          </button>
+          <button className=" border border-gray-400 text-3xl font-medium">
+            +/-
+          </button>
+          <button className=" border border-gray-400 text-3xl font-medium">
+            %
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500 text-white"
+          >
+            /
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
+          >
+            7
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            8
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            9
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
+          >
+            x
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
+          >
+            4
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            5
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            6
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
+          >
+            -
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
+            }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
           >
             1
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
-              second();
+              handleClicks(e);
             }}
+            className=" border border-gray-400 p-7 text-3xl font-medium"
           >
             2
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
+              handleClicks(e);
             }}
+            className=" border border-gray-400 text-3xl font-medium"
           >
             3
           </button>
           <button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              handleRight(e);
-              handleSum();
-              checkFinal();
+              handleClicks(e);
             }}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
             +
-          </button>{" "}
-          <br />
+          </button>
           <button
-            onClick={() => {
-              handleSum();
-              second();
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleClicks(e);
             }}
+            className=" border border-gray-400 col-span-2 p-7 text-3xl font-medium"
+          >
+            0
+          </button>
+          <button
+            onClick={() => {}}
+            className=" border border-gray-400 text-3xl font-medium"
+          >
+            .
+          </button>
+          <button
+            onClick={handleEqual}
+            className=" border border-gray-400 text-3xl font-medium bg-orange-500  text-white"
           >
             =
           </button>
@@ -89,4 +235,5 @@ const Calculator = () => {
     </>
   );
 };
+
 export default Calculator;

@@ -1,1 +1,4 @@
 @import "tailwindcss";
+.size-lg {
+  width: 19.35rem;
+}
